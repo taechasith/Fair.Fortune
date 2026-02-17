@@ -29,11 +29,11 @@ export function AgeCurveChart({
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="age" />
-          <YAxis />
+          <CartesianGrid strokeDasharray="4 4" stroke="#D4AF37" opacity={0.35} />
+          <XAxis dataKey="age" stroke="#7A0C1B" />
+          <YAxis stroke="#7A0C1B" />
           <Tooltip />
-          <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" dot={false} />
+          <Line type="monotone" dataKey="weight" stroke="#C8102E" strokeWidth={2.5} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>

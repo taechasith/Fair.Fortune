@@ -23,18 +23,21 @@ export default function LabPage() {
   );
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-bold">Lab Mode</h1>
-      <Card>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-[#7A0C1B]">Lab Mode</h1>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Solver Comparison</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div>Diagonal dominance: {lab.diagonalDominance ? "Yes" : "No (iterative methods may diverge)"}</div>
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             {Object.entries(lab.results).map(([name, res]) => (
-              <div key={name} className="rounded-md border p-3">
-                <div className="font-medium">{name}</div>
+              <div key={name} className="cny-plaque rounded-2xl p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="font-semibold text-[#7A0C1B]">{name}</div>
+                  <span className="cny-badge">{res.converged ? "Converged" : "Not converged"}</span>
+                </div>
                 <div>Converged: {String(res.converged)}</div>
                 <div>Iterations: {res.iterations}</div>
                 <div>L2 residual: {res.l2Residual.toExponential(3)}</div>
@@ -46,7 +49,7 @@ export default function LabPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Convergence History (Linf Residual)</CardTitle>
         </CardHeader>
@@ -58,12 +61,12 @@ export default function LabPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Perturb Age (+1 year)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <Label>Recipient</Label>
+          <Label className="text-[#7A0C1B]">Recipient</Label>
           <Select value={targetId} onChange={(e) => setTargetId(e.target.value)}>
             {recipients.map((r) => (
               <option key={r.id} value={r.id}>
@@ -71,7 +74,7 @@ export default function LabPage() {
               </option>
             ))}
           </Select>
-          <div className="rounded-md border p-3">
+          <div className="cny-plaque rounded-2xl p-4">
             {sensitivity.deltaVector.map((d) => (
               <div key={d.name}>
                 Delta({d.name}) = {d.delta.toFixed(2)}

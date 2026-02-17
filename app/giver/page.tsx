@@ -27,10 +27,10 @@ export default function GiverPage() {
   const canRun = useMemo(() => recipients.length > 0 && settings.budget >= 0, [recipients, settings.budget]);
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-bold">Giver Mode</h1>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-[#7A0C1B]">Giver Mode</h1>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
+        <Card className="cny-panel">
           <CardHeader>
             <CardTitle>Recipients</CardTitle>
           </CardHeader>
@@ -38,7 +38,7 @@ export default function GiverPage() {
             <RecipientTable recipients={recipients} onChange={setRecipients} />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="cny-panel">
           <CardHeader>
             <CardTitle>Settings</CardTitle>
           </CardHeader>
@@ -48,7 +48,7 @@ export default function GiverPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Age Curve</CardTitle>
         </CardHeader>
@@ -57,8 +57,11 @@ export default function GiverPage() {
         </CardContent>
       </Card>
 
+      <div className="cny-divider" />
+
       <div className="flex flex-wrap gap-2">
         <Button
+          className="cny-shimmer"
           onClick={() => {
             if (!canRun) return;
             setLastResult(computeAllocation(recipients, settings));
@@ -72,11 +75,11 @@ export default function GiverPage() {
         <ImportJson onImport={setAll} />
       </div>
 
-      <Card>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Results</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="cny-parchment rounded-xl p-4">
           <ResultsPanel result={lastResult} budget={settings.budget} />
         </CardContent>
       </Card>

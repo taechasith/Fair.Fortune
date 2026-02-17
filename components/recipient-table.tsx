@@ -34,7 +34,7 @@ export function RecipientTable({
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-12 gap-2 text-xs font-semibold text-muted-foreground">
+      <div className="grid grid-cols-12 gap-2 text-xs font-semibold text-[#7A0C1B]/85">
         <div className="col-span-2">Name</div>
         <div className="col-span-1">Age</div>
         <div className="col-span-2">Preset</div>
@@ -57,7 +57,7 @@ export function RecipientTable({
             onChange={(e) => update(r.id, { age: Number(e.target.value) })}
           />
           <select
-            className="col-span-2 h-10 rounded-md border bg-background px-2 text-sm"
+            className="col-span-2 h-10 rounded-xl border border-[#D4AF37]/50 bg-[#FDF6EC] px-2 text-sm text-[#2B2B2B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
             value={r.preset}
             onChange={(e) => {
               const preset = e.target.value as RolePreset;

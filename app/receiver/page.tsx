@@ -19,14 +19,14 @@ export default function ReceiverPage() {
   const selected = result.allocations.find((x) => x.recipientId === recipientId) ?? result.allocations[0];
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-bold">Receiver Mode</h1>
-      <Card>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-[#7A0C1B]">Receiver Mode</h1>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Why This Amount?</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Label>Recipient</Label>
+          <Label className="text-[#7A0C1B]">Recipient</Label>
           <Select value={selected?.recipientId} onChange={(e) => setRecipientId(e.target.value)}>
             {result.allocations.map((a) => (
               <option key={a.recipientId} value={a.recipientId}>
@@ -35,10 +35,15 @@ export default function ReceiverPage() {
             ))}
           </Select>
           {selected && (
-            <div className="rounded-md border p-3">
+            <div className="cny-parchment cny-sparkle rounded-2xl p-4">
               <div className="text-lg font-semibold">{selected.name}</div>
-              <div>Final hongbao: {formatMoney(selected.rounded)}</div>
-              <div className="text-sm text-muted-foreground">{selected.explanation}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{selected.explanation}</div>
+              <div className="mt-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-[#7A0C1B]/70">Final Hongbao</div>
+                <div className="mt-1 inline-block border-b-2 border-[#D4AF37] pb-1 text-4xl font-bold text-[#C8102E] drop-shadow-[0_0_8px_rgba(200,16,46,0.2)]">
+                  {formatMoney(selected.rounded)}
+                </div>
+              </div>
               <div className="text-sm">Age-curve contribution: {selected.ageWeight.toFixed(3)}</div>
               <div className="text-sm">Blended weight: {selected.blendedWeight.toFixed(3)}</div>
             </div>
@@ -46,7 +51,7 @@ export default function ReceiverPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Age Curve Visualization</CardTitle>
         </CardHeader>
@@ -55,17 +60,18 @@ export default function ReceiverPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-[#D4AF37]/60 bg-[linear-gradient(145deg,#C8102E,#7A0C1B)] text-[#FDF6EC] shadow-[0_10px_24px_rgba(122,12,27,0.26)]">
         <CardHeader>
           <CardTitle>Gratitude Note</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <Textarea
+            className="border-[#D4AF37]/70 bg-[#FDF6EC] text-[#2B2B2B]"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Write a thank-you note to the giver..."
           />
-          <div className="text-xs text-muted-foreground">Saved locally in browser session only.</div>
+          <div className="text-xs text-[#F8EFD8]">Saved locally in browser session only.</div>
         </CardContent>
       </Card>
     </div>

@@ -19,7 +19,7 @@ export function Slider({ min = 0, max = 1, step = 0.01, value, onValueChange, cl
       step={step}
       value={value}
       onChange={(e) => onValueChange(Number(e.target.value))}
-      className={cn("h-2 w-full cursor-pointer accent-primary", className)}
+      className={cn("cny-slider w-full cursor-pointer", className)}
     />
   );
 }

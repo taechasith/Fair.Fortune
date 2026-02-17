@@ -11,7 +11,7 @@ export function ResultsPanel({ result, budget }: { result?: AllocationResult; bu
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border p-3">
+      <div className="cny-plaque rounded-xl p-3">
         <div>Total rounded: {formatMoney(result.totalRounded)}</div>
         <div>Budget: {formatMoney(budget)}</div>
         <div>
@@ -21,7 +21,7 @@ export function ResultsPanel({ result, budget }: { result?: AllocationResult; bu
       </div>
       <div className="space-y-2">
         {result.allocations.map((a) => (
-          <div key={a.recipientId} className="rounded-md border p-3">
+          <div key={a.recipientId} className="cny-plaque rounded-xl p-3">
             <div className="font-medium">{a.name}</div>
             <div className="text-sm">Continuous: {formatMoney(a.continuous)}</div>
             <div className="text-sm">Final: {formatMoney(a.rounded)}</div>
