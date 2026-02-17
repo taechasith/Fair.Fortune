@@ -79,7 +79,7 @@ export function jacobiSolver(a: number[][], b: number[], opts: IterativeOptions 
   const maxIter = opts.maxIter ?? 200;
   const tol = opts.tol ?? 1e-8;
   let x = Array.from({ length: n }, () => 0);
-  let next = [...x];
+  const next = [...x];
   const history: IterationPoint[] = [];
 
   for (let iter = 1; iter <= maxIter; iter += 1) {

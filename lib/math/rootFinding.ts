@@ -31,9 +31,9 @@ function evalF(alpha: number, params: CorrectionParams): { f: number; rounded: n
 }
 
 function bracketRoot(params: CorrectionParams): { a: number; b: number } | null {
-  let a = 0;
+  const a = 0;
   let b = 2;
-  let fa = evalF(a, params).f;
+  const fa = evalF(a, params).f;
   let fb = evalF(b, params).f;
 
   for (let i = 0; i < 30 && fa * fb > 0; i += 1) {
