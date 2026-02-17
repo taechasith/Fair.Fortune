@@ -24,7 +24,10 @@ export default function LabPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-[#7A0C1B]">Lab Mode</h1>
+      <h1 className="text-3xl font-bold text-[#7A0C1B]">Behind the Scenes (For Study Use)</h1>
+      <div className="rounded-2xl border border-[#D4AF37]/55 bg-[#F8EFD8] p-4 text-sm text-[#7A0C1B]">
+        This section is for educational purposes.
+      </div>
       <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Solver Comparison</CardTitle>

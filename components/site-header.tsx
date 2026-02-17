@@ -7,8 +7,7 @@ import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/giver", label: "Giver Mode" },
-  { href: "/receiver", label: "Receiver Mode" },
-  { href: "/lab", label: "Lab Mode" }
+  { href: "/receiver", label: "Receiver Mode" }
 ];
 
 export function SiteHeader() {

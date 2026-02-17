@@ -33,6 +33,12 @@ export function computeAllocation(
 
   const allocations = recipients.map((r, i) => {
     const target = targets[i];
+    const ageMessage =
+      settings.fairnessLambda < 0.5
+        ? "age plays a stronger part in this plan"
+        : settings.fairnessLambda < 0.8
+          ? "age has some influence in this plan"
+          : "this plan keeps amounts closer for everyone";
     return {
       recipientId: r.id,
       name: r.name,
@@ -41,7 +47,7 @@ export function computeAllocation(
       proportion: target.proportion,
       ageWeight: target.rawWeight,
       blendedWeight: target.blendedWeight,
-      explanation: `${r.name} gets ${(100 * target.proportion).toFixed(1)}% based on age-weight ${target.rawWeight.toFixed(3)} and role factor ${r.roleFactor.toFixed(2)}.`
+      explanation: `${r.name} receives a share that matches their age and the fairness style you chose. In this run, ${ageMessage}.`
     };
   });
 
@@ -50,7 +56,7 @@ export function computeAllocation(
   if (correction.warning) warnings.push(correction.warning);
   if (!correction.exact) {
     warnings.push(
-      "Exact total match was not possible under rounding/bounds. Best effort is returned with residual difference."
+      "A perfect total match was not possible with these limits, so we returned the closest stable result."
     );
   }
 

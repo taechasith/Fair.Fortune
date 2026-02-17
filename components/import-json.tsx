@@ -19,7 +19,7 @@ export function ImportJson({ onImport }: { onImport: (state: PersistedState) => 
     <div className="flex items-center gap-2">
       <input ref={ref} hidden type="file" accept="application/json" onChange={onFile} />
       <Button variant="secondary" onClick={() => ref.current?.click()}>
-        Import JSON
+        Import Data
       </Button>
     </div>
   );

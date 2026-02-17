@@ -14,12 +14,6 @@ const modes = [
     icon: "🧧",
     title: "Receiver Mode",
     description: "Pick one person and see why their hongbao amount was assigned."
-  },
-  {
-    href: "/lab",
-    icon: "📊",
-    title: "Lab Mode",
-    description: "Compare Gaussian/Jacobi/Gauss-Seidel and inspect convergence/sensitivity."
   }
 ];
 
@@ -59,7 +53,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2">
         {modes.map((mode) => (
           <Link key={mode.href} href={mode.href}>
             <Card className="cny-panel cny-card-hover h-full rounded-2xl transition">
@@ -79,6 +73,23 @@ export default function HomePage() {
             </Card>
           </Link>
         ))}
+      </section>
+
+      <section className="cny-panel rounded-2xl p-4 md:p-6">
+        <details>
+          <summary className="cursor-pointer text-sm font-semibold text-[#7A0C1B]">
+            Study / Classroom Mode
+          </summary>
+          <p className="mt-2 text-sm text-[#5f5148]">
+            This section is for educational purposes and shows the behind-the-scenes calculation process.
+          </p>
+          <Link
+            href="/lab"
+            className="mt-3 inline-flex rounded-full border border-[#D4AF37]/70 bg-[#FDF6EC] px-4 py-2 text-sm font-medium text-[#7A0C1B] hover:bg-[#F8EFD8]"
+          >
+            Open Behind the Scenes
+          </Link>
+        </details>
       </section>
     </div>
   );

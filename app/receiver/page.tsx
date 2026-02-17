@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AgeCurveChart } from "@/components/age-curve-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -37,26 +36,28 @@ export default function ReceiverPage() {
           {selected && (
             <div className="cny-parchment cny-sparkle rounded-2xl p-4">
               <div className="text-lg font-semibold">{selected.name}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{selected.explanation}</div>
               <div className="mt-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-[#7A0C1B]/70">Final Hongbao</div>
+                <div className="text-xs uppercase tracking-[0.24em] text-[#7A0C1B]/70">Your Hongbao</div>
                 <div className="mt-1 inline-block border-b-2 border-[#D4AF37] pb-1 text-4xl font-bold text-[#C8102E] drop-shadow-[0_0_8px_rgba(200,16,46,0.2)]">
-                  {formatMoney(selected.rounded)}
+                  🧧 {formatMoney(selected.rounded)}
                 </div>
               </div>
-              <div className="text-sm">Age-curve contribution: {selected.ageWeight.toFixed(3)}</div>
-              <div className="text-sm">Blended weight: {selected.blendedWeight.toFixed(3)}</div>
+              <div className="mt-3 text-sm text-[#5f5148]">This amount is based on:</div>
+              <ul className="mt-1 space-y-1 text-sm text-[#5f5148]">
+                <li>Your age</li>
+                <li>The total budget</li>
+                <li>The fairness level chosen</li>
+              </ul>
+              <div className="mt-3 text-sm text-[#5f5148]">{selected.explanation}</div>
+              <details className="mt-3">
+                <summary className="cursor-pointer text-xs text-[#7A0C1B]">See detailed explanation</summary>
+                <div className="mt-2 text-xs text-[#5f5148]">
+                  Planned before rounding: {formatMoney(selected.continuous)}
+                </div>
+                <div className="text-xs text-[#5f5148]">Final amount after rounding: {formatMoney(selected.rounded)}</div>
+              </details>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      <Card className="cny-panel">
-        <CardHeader>
-          <CardTitle>Age Curve Visualization</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AgeCurveChart anchors={settings.anchorPoints} model={settings.solverSettings.ageCurveModel} />
         </CardContent>
       </Card>
 
