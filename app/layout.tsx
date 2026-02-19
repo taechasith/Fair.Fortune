@@ -12,6 +12,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const year = new Date().getFullYear();
+
   return (
     <html lang="en" data-theme="morning">
       <body>
@@ -19,9 +21,8 @@ export default function RootLayout({
           <SiteHeader />
           <main className="page-main">{children}</main>
           <footer className="page-footer">
-            All Right Reserved
-            <br />
-            to the Researcher of FUTURISTIC CULTURE Interfaces at CreativeDev.Lab@HSUTCC (CreativeLabTH Group).
+            &copy; {year} All Rights Reserved. Researcher of FUTURISTIC CULTURE Interfaces, CreativeDev.Lab@HSUTCC
+            (CreativeLabTH Group).
           </footer>
         </div>
       </body>

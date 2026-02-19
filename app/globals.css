@@ -181,6 +181,8 @@ textarea {
   max-width: 1200px;
   padding: 0 1rem 1.25rem;
   font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
   color: var(--footer-text);
   opacity: 0.9;
 }
@@ -257,6 +259,34 @@ html[data-theme="dark"] .cny-divider {
 html[data-theme="dark"] .cny-parchment {
   border-color: rgba(212, 175, 55, 0.42);
   background: linear-gradient(180deg, rgba(66, 30, 37, 0.96), rgba(45, 23, 29, 0.9));
+}
+
+/* Dark theme contrast fixes for existing fixed utility color classes */
+html[data-theme="dark"] .text-\[\#5f5148\],
+html[data-theme="dark"] .text-\[\#2B2B2B\],
+html[data-theme="dark"] .text-\[\#6f6259\],
+html[data-theme="dark"] .text-\[\#7A0C1B\],
+html[data-theme="dark"] .text-\[\#7A0C1B\]\/70,
+html[data-theme="dark"] .text-\[\#7A0C1B\]\/85 {
+  color: #f2dfb8 !important;
+}
+
+html[data-theme="dark"] .text-\[\#C8102E\] {
+  color: #ff8f9f !important;
+}
+
+html[data-theme="dark"] .bg-\[\#FDF6EC\],
+html[data-theme="dark"] .bg-\[\#F8EFD8\] {
+  background-color: rgba(61, 27, 34, 0.9) !important;
+}
+
+html[data-theme="dark"] .border-\[\#D4AF37\]\/60,
+html[data-theme="dark"] .border-\[\#D4AF37\]\/70,
+html[data-theme="dark"] .border-\[\#D4AF37\]\/55,
+html[data-theme="dark"] .border-\[\#D4AF37\]\/50,
+html[data-theme="dark"] .border-\[\#D4AF37\]\/45,
+html[data-theme="dark"] .border-\[\#D4AF37\]\/40 {
+  border-color: rgba(212, 175, 55, 0.5) !important;
 }
 
 .site-header {
