@@ -23,5 +23,9 @@ export async function GET(request: NextRequest, context: { params: { code: strin
     if (visibility === "room") return true;
     return message.senderUserId === user.id || message.privateToUserId === user.id;
   });
-  return NextResponse.json({ room: { ...room, messages: visibleMessages }, role });
+  const visibleBankDetails = role === "giver" ? room.bankDetails : undefined;
+  return NextResponse.json({
+    room: { ...room, bankDetails: visibleBankDetails, messages: visibleMessages },
+    role
+  });
 }

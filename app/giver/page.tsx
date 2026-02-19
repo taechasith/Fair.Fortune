@@ -398,6 +398,23 @@ export default function GiverPage() {
 
       <Card className="cny-panel">
         <CardHeader>
+          <CardTitle>Receiver Bank Details (Private)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {activeRoom?.bankDetails ? (
+            <div className="rounded-xl border border-[#D4AF37]/35 p-3">
+              <div><span className="font-semibold text-[#7A0C1B]">Bank:</span> {activeRoom.bankDetails.bankName}</div>
+              <div><span className="font-semibold text-[#7A0C1B]">Account name:</span> {activeRoom.bankDetails.accountName}</div>
+              <div><span className="font-semibold text-[#7A0C1B]">Account number:</span> {activeRoom.bankDetails.accountNumber}</div>
+            </div>
+          ) : (
+            <p className="text-[#5f5148]">No bank details shared yet by receiver.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="cny-panel">
+        <CardHeader>
           <CardTitle>Giver message + transfer slip upload</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

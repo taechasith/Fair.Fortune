@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/server/auth";
-import { getRoom, saveRoomBankDetails, userCanAccessRoom } from "@/lib/server/collabStore";
+import {
+  addRoomMessage,
+  getRoom,
+  saveRoomBankDetails,
+  userCanAccessRoom
+} from "@/lib/server/collabStore";
 
 export async function PATCH(request: NextRequest, context: { params: { code: string } }) {
   const user = getAuthenticatedUser(request);
@@ -26,7 +31,27 @@ export async function PATCH(request: NextRequest, context: { params: { code: str
 
   try {
     const updated = saveRoomBankDetails(room, user.id, { bankName, accountName, accountNumber });
-    return NextResponse.json({ room: updated });
+    const senderRole = updated.giverUserId === user.id ? "giver" : "receiver";
+    const privateToUserId = senderRole === "receiver" ? updated.giverUserId : updated.receiverUserId;
+    const privateMessage = [
+      "Receiver bank details",
+      `Bank: ${bankName}`,
+      `Account name: ${accountName}`,
+      `Account number: ${accountNumber}`
+    ].join("\n");
+
+    const withMessage =
+      privateToUserId
+        ? addRoomMessage(updated, senderRole, user.id, privateMessage, undefined, "private", privateToUserId)
+        : updated;
+
+    const visibleMessages = withMessage.messages.filter((message) => {
+      const visibility = message.visibility ?? "room";
+      if (visibility === "room") return true;
+      return message.senderUserId === user.id || message.privateToUserId === user.id;
+    });
+
+    return NextResponse.json({ room: { ...withMessage, messages: visibleMessages } });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Could not save bank details" },

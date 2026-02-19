@@ -249,6 +249,7 @@ export default function ReceiverPage() {
             <Button disabled={loading || !roomCode} onClick={saveBankDetails}>
               Save bank details
             </Button>
+            <p className="mt-2 text-xs text-[#5f5148]">These details are sent privately to the giver.</p>
           </div>
         </CardContent>
       </Card>
