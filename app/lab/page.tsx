@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { AgeCurveChart } from "@/components/age-curve-chart";
 import { ConvergenceChart } from "@/components/convergence-chart";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -31,135 +30,131 @@ export default function LabPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-[#7A0C1B]">Lab (Behind the Scenes)</h1>
-      <div className="rounded-2xl border border-[#D4AF37]/55 bg-[#F8EFD8] p-4 text-sm text-[#7A0C1B]">
-        Focus: how each algorithm is used by specific functions in the real allocation flow.
-      </div>
 
       <Card className="cny-panel">
         <CardHeader>
-          <CardTitle>Algorithm to Function Map</CardTitle>
+          <CardTitle>How The Engine Runs</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm">
+        <CardContent className="grid gap-3 text-sm md:grid-cols-2">
           <div className="cny-plaque rounded-2xl p-4">
-            <div className="font-semibold text-[#7A0C1B]">Numerical accuracy & stability</div>
-            <div><code>perturbAgeSensitivity(...)</code>: checks sensitivity / amplification from age perturbation.</div>
-            <div><code>l2Norm(...)</code>, <code>linfNorm(...)</code>: residual magnitude tracking.</div>
-            <div><code>gaussianEliminationPartialPivoting(...)</code>: singular / near-singular safety check.</div>
+            <div className="text-base font-semibold text-[#7A0C1B]">1) Age interpolation</div>
+            <div>Functions: <code>buildAgeCurve</code>, <code>piecewiseLinearInterpolation</code>, <code>naturalCubicSplineInterpolation</code></div>
           </div>
           <div className="cny-plaque rounded-2xl p-4">
-            <div className="font-semibold text-[#7A0C1B]">Linear algebra (SLE)</div>
-            <div><code>buildLabSystem(...)</code>: builds <code>A</code> and <code>b</code>.</div>
-            <div><code>matVecMul(...)</code> + <code>subVec(...)</code>: builds residual <code>r = Ax - b</code>.</div>
-            <div><code>l2Norm(...)</code> and <code>linfNorm(...)</code>: reports <code>||r||2</code>, <code>||r||inf</code>.</div>
+            <div className="text-base font-semibold text-[#7A0C1B]">2) Build constrained allocation</div>
+            <div>Functions: <code>buildTargetWeights</code>, <code>applyBounds</code>, <code>computeAllocation</code></div>
           </div>
           <div className="cny-plaque rounded-2xl p-4">
-            <div className="font-semibold text-[#7A0C1B]">Linear system solvers</div>
-            <div><code>gaussianEliminationPartialPivoting(...)</code>: direct solve.</div>
-            <div><code>jacobiSolver(...)</code> + <code>gaussSeidelSolver(...)</code>: iterative solve with history per iteration.</div>
-            <div><code>runLabSolvers(...)</code>: runs and compares all methods together.</div>
+            <div className="text-base font-semibold text-[#7A0C1B]">3) Root-correct rounded totals</div>
+            <div>Functions: <code>correctBudgetAfterRounding</code>, <code>solveBisection</code>, <code>solveNewton</code></div>
           </div>
           <div className="cny-plaque rounded-2xl p-4">
-            <div className="font-semibold text-[#7A0C1B]">Interpolation for age modeling</div>
-            <div><code>piecewiseLinearInterpolation(...)</code> and <code>naturalCubicSplineInterpolation(...)</code>.</div>
-            <div><code>buildAgeCurve(...)</code>: picks model and returns <code>ageWeight(age)</code>.</div>
-            <div>Used by <code>buildTargetWeights(...)</code> inside <code>computeAllocation(...)</code>.</div>
-          </div>
-          <div className="cny-plaque rounded-2xl p-4">
-            <div className="font-semibold text-[#7A0C1B]">Root finding for budget correction</div>
-            <div><code>solveBisection(...)</code> and <code>solveNewton(...)</code> with safeguards.</div>
-            <div><code>correctBudgetAfterRounding(...)</code>: chooses method/fallback and returns corrected rounded totals.</div>
-            <div>Called from <code>computeAllocation(...)</code> after lucky rounding.</div>
+            <div className="text-base font-semibold text-[#7A0C1B]">4) Diagnose numerical behavior</div>
+            <div>Functions: <code>runLabSolvers</code>, <code>perturbAgeSensitivity</code>, <code>l2Norm</code>, <code>linfNorm</code></div>
           </div>
         </CardContent>
       </Card>
 
       <Card className="cny-panel">
         <CardHeader>
-          <CardTitle>Linear Algebra View (Live)</CardTitle>
+          <CardTitle>Algorithm To Function To Output</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="cny-plaque rounded-2xl p-4">
-            <div className="mt-2 font-mono text-xs">
-              A =
-              {lab.matrixA.map((row, index) => (
-                <div key={`row-${index}`}>{renderMatrixRow(row)}</div>
-              ))}
-            </div>
-            <div className="mt-2 font-mono text-xs">b = {renderMatrixRow(lab.vectorB)}</div>
-            <div className="mt-2">Diagonal dominance: {lab.diagonalDominance ? "Yes" : "No (iterative methods may diverge)"}</div>
+            <div className="font-semibold text-[#7A0C1B]">Numerical accuracy & stability</div>
+            <div><code>perturbAgeSensitivity</code>, <code>l2Norm</code>, <code>linfNorm</code> to sensitivity and residual size shown below.</div>
           </div>
+          <div className="cny-plaque rounded-2xl p-4">
+            <div className="font-semibold text-[#7A0C1B]">Linear algebra (Ax=b)</div>
+            <div><code>buildLabSystem</code>, <code>matVecMul</code>, <code>subVec</code> to matrix/vector and residual metrics.</div>
+          </div>
+          <div className="cny-plaque rounded-2xl p-4">
+            <div className="font-semibold text-[#7A0C1B]">Linear solvers</div>
+            <div><code>gaussianEliminationPartialPivoting</code>, <code>jacobiSolver</code>, <code>gaussSeidelSolver</code> to comparison and convergence chart.</div>
+          </div>
+          <div className="cny-plaque rounded-2xl p-4">
+            <div className="font-semibold text-[#7A0C1B]">Interpolation for age model</div>
+            <div><code>buildAgeCurve</code> (spline/linear) to age-weight curve visual.</div>
+          </div>
+          <div className="cny-plaque rounded-2xl p-4">
+            <div className="font-semibold text-[#7A0C1B]">Root finding for budget correction</div>
+            <div><code>correctBudgetAfterRounding</code> (Newton/Bisection safeguards) to budget match status and delta.</div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="cny-panel">
+        <CardHeader>
+          <CardTitle>Live Solver Summary</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
           <div className="grid gap-4 md:grid-cols-3">
             {Object.entries(lab.results).map(([name, res]) => (
               <div key={name} className="cny-plaque rounded-2xl p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="font-semibold text-[#7A0C1B]">{name}</div>
-                  <span className="cny-badge">{res.converged ? "Converged" : "Not converged"}</span>
-                </div>
+                <div className="text-base font-semibold text-[#7A0C1B]">{name}</div>
                 <div>Converged: {String(res.converged)}</div>
                 <div>Iterations: {res.iterations}</div>
-                <div>L2 residual: {res.l2Residual.toExponential(3)}</div>
-                <div>Linf residual: {res.linfResidual.toExponential(3)}</div>
+                <div>||r||2: {res.l2Residual.toExponential(3)}</div>
+                <div>||r||inf: {res.linfResidual.toExponential(3)}</div>
                 {res.warning && <div className="text-warning">{res.warning}</div>}
               </div>
             ))}
           </div>
+
+          <details className="rounded-xl border border-[#D4AF37]/35 p-3">
+            <summary className="cursor-pointer font-medium text-[#7A0C1B]">Show Ax = b</summary>
+            <div className="mt-2 text-xs font-mono">
+              <div>A =</div>
+              {lab.matrixA.map((row, index) => (
+                <div key={`row-${index}`}>{renderMatrixRow(row)}</div>
+              ))}
+              <div className="mt-2">b = {renderMatrixRow(lab.vectorB)}</div>
+              <div className="mt-2 font-sans text-sm text-[#2B2B2B]">
+                Diagonal dominance: {lab.diagonalDominance ? "Yes" : "No"}
+              </div>
+            </div>
+          </details>
         </CardContent>
       </Card>
 
       <Card className="cny-panel">
         <CardHeader>
-          <CardTitle>Convergence History (Linf Residual)</CardTitle>
+          <CardTitle>Convergence (Iterative Solvers)</CardTitle>
         </CardHeader>
         <CardContent>
-          <ConvergenceChart
-            jacobi={lab.results.jacobi.history}
-            gaussSeidel={lab.results.gaussSeidel.history}
-          />
+          <ConvergenceChart jacobi={lab.results.jacobi.history} gaussSeidel={lab.results.gaussSeidel.history} />
         </CardContent>
       </Card>
 
-      <Card className="cny-panel">
-        <CardHeader>
-          <CardTitle>Interpolation For Age Modeling (Live)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="cny-plaque rounded-2xl p-4">
-            <div>Active model: <span className="font-semibold">{settings.solverSettings.ageCurveModel}</span></div>
-            <div className="mt-1">
-              Lagrange is conceptual background; live system uses piecewise linear or natural cubic spline.
-            </div>
-          </div>
-          <AgeCurveChart anchors={settings.anchorPoints} model={settings.solverSettings.ageCurveModel} />
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="cny-panel">
+          <CardHeader>
+            <CardTitle>Age Interpolation (Live)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div>Model: <span className="font-semibold">{settings.solverSettings.ageCurveModel}</span></div>
+            <AgeCurveChart anchors={settings.anchorPoints} model={settings.solverSettings.ageCurveModel} />
+          </CardContent>
+        </Card>
 
-      <Card className="cny-panel">
-        <CardHeader>
-          <CardTitle>Root Finding For Budget Correction (Live)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="cny-plaque rounded-2xl p-4">
-            <div>Method selected: {settings.solverSettings.rootMethod}</div>
-            <div>Scale factor alpha: {allocation.alpha.toFixed(6)}</div>
+        <Card className="cny-panel">
+          <CardHeader>
+            <CardTitle>Budget Correction (Live)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div>Method: {settings.solverSettings.rootMethod}</div>
+            <div>alpha: {allocation.alpha.toFixed(6)}</div>
             <div>Total rounded: {formatMoney(allocation.totalRounded)}</div>
-            <div>Target budget: {formatMoney(settings.budget)}</div>
+            <div>Budget: {formatMoney(settings.budget)}</div>
             <div>Difference: {formatMoney(allocation.diffFromBudget)}</div>
             <div>Status: {allocation.exactBudgetMatched ? "Exact match" : "Closest stable match"}</div>
-          </div>
-          {allocation.warnings.messages.length > 0 && (
-            <div className="cny-plaque rounded-2xl p-4">
-              <div className="font-semibold text-[#7A0C1B]">Safeguard / warning signals</div>
-              {allocation.warnings.messages.map((warning) => (
-                <div key={warning}>{warning}</div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       <Card className="cny-panel">
         <CardHeader>
-          <CardTitle>Sensitivity / Conditioning (Live)</CardTitle>
+          <CardTitle>Sensitivity Test (+1 Year Age)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <Label className="text-[#7A0C1B]">Recipient</Label>
@@ -172,15 +167,13 @@ export default function LabPage() {
           </Select>
           <div className="cny-plaque rounded-2xl p-4">
             {sensitivity.deltaVector.map((d) => (
-              <div key={d.name}>
-                Delta({d.name}) = {d.delta.toFixed(2)}
-              </div>
+              <div key={d.name}>Delta({d.name}) = {d.delta.toFixed(2)}</div>
             ))}
             <div>Max absolute change: {sensitivity.maxAbsoluteChange.toFixed(2)}</div>
             <div>Relative residual proxy ||r||/||b||: {sensitivity.relativeResidual.toExponential(3)}</div>
             <div>Amplification proxy: {sensitivity.amplification.toFixed(3)}</div>
           </div>
-          <Button variant="secondary">Floating-point effects: values shown are double precision approximations</Button>
+          <div className="text-xs text-[#5f5148]">Floating-point effects: values are double precision approximations.</div>
         </CardContent>
       </Card>
     </div>
