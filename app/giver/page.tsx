@@ -98,10 +98,34 @@ export default function GiverPage() {
 
   useEffect(() => {
     if (!roomCode) return;
-    const timer = setInterval(() => {
-      requestRoom(roomCode).catch(() => undefined);
-    }, 2500);
-    return () => clearInterval(timer);
+    let cancelled = false;
+    let inFlight = false;
+
+    const poll = async () => {
+      if (cancelled) return;
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        setTimeout(poll, 5000);
+        return;
+      }
+      if (inFlight) {
+        setTimeout(poll, 3500);
+        return;
+      }
+      inFlight = true;
+      try {
+        await requestRoom(roomCode);
+      } catch {
+        // Ignore transient polling errors.
+      } finally {
+        inFlight = false;
+      }
+      setTimeout(poll, 3500);
+    };
+
+    void poll();
+    return () => {
+      cancelled = true;
+    };
   }, [roomCode]);
 
   async function createProject() {

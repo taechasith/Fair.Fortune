@@ -1,5 +1,3 @@
-## What users see on each page
-
 - **Giver Mode page**
   This is where the full allocation is run when the user presses **Calculate**.  
   What happens behind the scenes:

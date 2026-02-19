@@ -23,9 +23,25 @@ export async function GET(request: NextRequest, context: { params: { code: strin
     if (visibility === "room") return true;
     return message.senderUserId === user.id || message.privateToUserId === user.id;
   });
+  const recentMessages = visibleMessages.slice(-100);
+  const recentNotes = room.gratitudeNotes.slice(-100);
   const visibleBankDetails = role === "giver" ? room.bankDetails : undefined;
-  return NextResponse.json({
-    room: { ...room, bankDetails: visibleBankDetails, messages: visibleMessages },
-    role
-  });
+  return NextResponse.json(
+    {
+      room: {
+        ...room,
+        bankDetails: visibleBankDetails,
+        messages: recentMessages,
+        gratitudeNotes: recentNotes
+      },
+      role
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+        Expires: "0"
+      }
+    }
+  );
 }

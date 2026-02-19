@@ -32,7 +32,12 @@ export async function fetchWithAuth(url: string, init?: RequestInit): Promise<Re
     ...(init?.headers ?? {}),
     ...authHeaders()
   };
-  const response = await fetch(url, { ...init, headers, credentials: "include" });
+  const response = await fetch(url, {
+    ...init,
+    headers,
+    credentials: "include",
+    cache: init?.cache ?? "no-store"
+  });
   if (response.status === 401) {
     clearSessionToken();
   }
