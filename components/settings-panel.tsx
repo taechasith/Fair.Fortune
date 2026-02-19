@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ScenarioSettings } from "@/lib/types";
+import { clamp } from "@/lib/utils";
 
 export type SpendingStyle = "balanced" | "younger" | "auto";
+const MIN_BUDGET = 0;
+const MAX_BUDGET = 1000000;
 
 export function SettingsPanel({
   settings,
@@ -20,6 +23,10 @@ export function SettingsPanel({
   onSpendingStyleChange: (next: SpendingStyle) => void;
 }) {
   const luckyEnabled = settings.luckyRules.preferEndings.length > 0;
+  function parseBudget(value: string): number | null {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
 
   return (
     <div className="space-y-4">
@@ -28,9 +35,15 @@ export function SettingsPanel({
         <Input
           className="border-[#7A0C1B]/65 bg-[linear-gradient(140deg,#C8102E,#7A0C1B)] font-semibold text-[#FDF6EC] placeholder:text-[#F8EFD8]/70"
           type="number"
-          min={0}
+          min={MIN_BUDGET}
+          max={MAX_BUDGET}
+          step={10}
           value={settings.budget}
-          onChange={(e) => onChange({ ...settings, budget: Number(e.target.value) })}
+          onChange={(e) => {
+            const parsed = parseBudget(e.target.value);
+            if (parsed === null) return;
+            onChange({ ...settings, budget: clamp(parsed, MIN_BUDGET, MAX_BUDGET) });
+          }}
         />
         <p className="mt-1 text-xs text-[#5f5148]">Example: 600 means total hongbao budget is $600.</p>
       </div>

@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Recipient } from "@/lib/types";
+import { clamp } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
+
+const MIN_AGE = 0;
+const MAX_AGE = 120;
+const MIN_AMOUNT = 0;
+const MAX_AMOUNT = 100000;
 
 export function RecipientTable({
   recipients,
@@ -15,6 +21,11 @@ export function RecipientTable({
 }) {
   function update(id: string, patch: Partial<Recipient>) {
     onChange(recipients.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  }
+
+  function parseNumber(value: string): number | null {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
   function remove(id: string) {
@@ -49,32 +60,66 @@ export function RecipientTable({
           <Input
             className="col-span-2"
             type="number"
+            min={MIN_AGE}
+            max={MAX_AGE}
+            step={1}
             value={r.age}
-            onChange={(e) => update(r.id, { age: Number(e.target.value) })}
+            onChange={(e) => {
+              const parsed = parseNumber(e.target.value);
+              if (parsed === null) return;
+              update(r.id, { age: clamp(parsed, MIN_AGE, MAX_AGE) });
+            }}
             placeholder="Age"
           />
           <Input
             className="col-span-2"
             type="number"
+            min={MIN_AMOUNT}
+            max={MAX_AMOUNT}
+            step={1}
             value={r.min ?? ""}
-            onChange={(e) =>
+            onChange={(e) => {
+              if (e.target.value === "") {
+                update(r.id, { min: undefined });
+                return;
+              }
+              const parsed = parseNumber(e.target.value);
+              if (parsed === null) return;
+              const nextMin = clamp(parsed, MIN_AMOUNT, MAX_AMOUNT);
               update(r.id, {
-                min: e.target.value === "" ? undefined : Number(e.target.value)
-              })
-            }
+                min: nextMin,
+                max: r.max !== undefined ? Math.max(r.max, nextMin) : undefined
+              });
+            }}
           />
           <Input
             className="col-span-3"
             type="number"
+            min={MIN_AMOUNT}
+            max={MAX_AMOUNT}
+            step={1}
             value={r.max ?? ""}
-            onChange={(e) =>
+            onChange={(e) => {
+              if (e.target.value === "") {
+                update(r.id, { max: undefined });
+                return;
+              }
+              const parsed = parseNumber(e.target.value);
+              if (parsed === null) return;
+              const nextMax = clamp(parsed, MIN_AMOUNT, MAX_AMOUNT);
               update(r.id, {
-                max: e.target.value === "" ? undefined : Number(e.target.value)
-              })
-            }
+                max: r.min !== undefined ? Math.max(nextMax, r.min) : nextMax
+              });
+            }}
           />
-          <Button className="col-span-1" variant="ghost" onClick={() => remove(r.id)}>
-            <Trash2 className="h-4 w-4" />
+          <Button
+            className="col-span-1 h-10 w-full min-w-[2.75rem] px-0"
+            variant="ghost"
+            onClick={() => remove(r.id)}
+            aria-label={`Delete ${r.name || "person"}`}
+            title="Delete person"
+          >
+            <Trash2 className="h-5 w-5" />
           </Button>
         </div>
       ))}
