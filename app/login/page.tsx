@@ -128,21 +128,29 @@ export default function LoginPage() {
       </Card>
 
       {showConsent && (
-        <div className="consent-backdrop fixed inset-0 z-50 flex items-center justify-center bg-[#2B2B2B]/60 p-4 backdrop-blur-sm">
-          <div className="consent-panel w-full max-w-xl rounded-2xl border border-[#D4AF37]/50 bg-[#FDF6EC] p-5 shadow-[0_24px_50px_rgba(43,43,43,0.35)] md:p-6">
-            <div className="consent-item rounded-xl border border-[#D4AF37]/35 bg-[#fffaf1] p-3" style={{ animationDelay: "20ms" }}>
-              <h2 className="text-lg font-bold text-[#7A0C1B]">Data Privacy Consent</h2>
-              <p className="mt-1 text-sm text-[#5f5148]">
+        <div className="consent-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="consent-card consent-panel w-full max-w-xl rounded-2xl p-5 md:p-6">
+            <div className="consent-header consent-item" style={{ animationDelay: "20ms" }}>
+              <h2 className="text-lg font-bold">Data Privacy Consent</h2>
+              <p className="mt-1 text-sm">
                 To use login and room collaboration, we need your consent to process account and message data.
               </p>
             </div>
-            <div className="consent-item mt-4 space-y-2 text-sm text-[#2B2B2B]" style={{ animationDelay: "80ms" }}>
-              <p><span className="font-semibold text-[#7A0C1B]">Stored:</span> account info, projects, room activity, notes, messages, bank details, transfer slip images.</p>
-              <p><span className="font-semibold text-[#7A0C1B]">Used for:</span> saving your work and connecting giver/receiver in shared rooms.</p>
-              <p><span className="font-semibold text-[#7A0C1B]">Control:</span> avoid sharing unnecessary sensitive data.</p>
+            <div className="consent-list consent-item mt-4 space-y-2 text-sm" style={{ animationDelay: "80ms" }}>
+              <p>
+                <span className="font-semibold">Stored:</span> account info, projects, room activity, notes, messages,
+                bank details, transfer slip images.
+              </p>
+              <p>
+                <span className="font-semibold">Used for:</span> saving your work and connecting giver/receiver in
+                shared rooms.
+              </p>
+              <p>
+                <span className="font-semibold">Control:</span> avoid sharing unnecessary sensitive data.
+              </p>
             </div>
             <label
-              className="consent-item mt-4 flex items-start gap-2 rounded-lg border border-[#D4AF37]/30 bg-[#fffaf1] p-3 text-sm text-[#2B2B2B]"
+              className="consent-check-wrap consent-item mt-4 flex items-start gap-2 rounded-lg p-3 text-sm"
               style={{ animationDelay: "120ms" }}
             >
               <input
