@@ -251,6 +251,12 @@ html[data-theme="dark"] .cny-divider {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.56), 0 8px 20px rgba(122, 12, 27, 0.08);
 }
 
+html[data-theme="dark"] .cny-plaque {
+  border-color: rgba(212, 175, 55, 0.45);
+  background: linear-gradient(170deg, rgba(70, 32, 40, 0.96), rgba(52, 25, 32, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.3);
+}
+
 .cny-parchment {
   border: 1px solid rgba(212, 175, 55, 0.6);
   background: linear-gradient(180deg, rgba(253, 246, 236, 0.98), rgba(246, 233, 211, 0.92));

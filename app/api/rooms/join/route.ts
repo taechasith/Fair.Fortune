@@ -18,9 +18,10 @@ export async function POST(request: NextRequest) {
     const room = joinRoom(roomCode, user.id);
     return NextResponse.json({ room });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not join room";
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Could not join room" },
-      { status: 404 }
+      { error: message },
+      { status: message.includes("private") ? 403 : 404 }
     );
   }
 }

@@ -15,7 +15,7 @@ function friendlyWarning(message: string): string {
   if (lower.includes("singular") || lower.includes("diverge")) {
     return "This setup could not find a stable result right away. Please try slightly different settings.";
   }
-  return "One setting made this run less stable, so we used the safest available result.";
+  return "One setting was unstable, so we used the safest result.";
 }
 
 export function ResultsPanel({ result, budget }: { result?: AllocationResult; budget: number }) {
@@ -50,7 +50,9 @@ export function ResultsPanel({ result, budget }: { result?: AllocationResult; bu
       {result.warnings.messages.length > 0 && (
         <Alert className="border-warning text-warning">
           {result.warnings.messages.map((w) => (
-            <div key={w}>{friendlyWarning(w)}</div>
+            <div key={w} className="overflow-x-auto whitespace-nowrap">
+              {friendlyWarning(w)}
+            </div>
           ))}
         </Alert>
       )}

@@ -233,11 +233,15 @@ export function joinRoom(roomCode: string, userId: string): Room {
   if (!room) {
     throw new Error("Room not found");
   }
+  if (room.giverUserId === userId || room.receiverUserId === userId) {
+    return room;
+  }
   if (!room.receiverUserId) {
     room.receiverUserId = userId;
     saveStore(store);
+    return room;
   }
-  return room;
+  throw new Error("Room is private and already has a receiver");
 }
 
 export function getRoom(roomCode: string): Room | undefined {

@@ -118,9 +118,24 @@ export default function GiverPage() {
         }
         throw new Error(parseErrorText(payload));
       }
+      const createdProject = payload.project as Project;
+      setSelectedProjectId(createdProject.id);
       setTitle("");
       setSituation("");
       await requestProjects();
+
+      const roomResponse = await fetchWithAuth("/api/rooms/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId: createdProject.id })
+      });
+      const roomPayload = await roomResponse.json();
+      if (!roomResponse.ok) {
+        throw new Error(parseErrorText(roomPayload));
+      }
+      const room = roomPayload.room as CollaborationRoom;
+      setRoomCode(room.code);
+      setActiveRoom(room);
     } catch (apiError) {
       setError(apiError instanceof Error ? apiError.message : "Could not create project");
     } finally {
@@ -300,6 +315,23 @@ export default function GiverPage() {
           </div>
 
           {roomCode && <p className="text-sm text-[#7A0C1B]">Connected room code: {roomCode}</p>}
+          {roomCode && (
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#D4AF37]/45 bg-[#fffaf1] p-3">
+              <span className="text-sm text-[#7A0C1B]">Share this room code:</span>
+              <code className="rounded-md bg-[#7A0C1B] px-2 py-1 text-sm font-bold tracking-[0.12em] text-[#FDF6EC]">
+                {roomCode}
+              </code>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(roomCode);
+                }}
+              >
+                Copy code
+              </Button>
+            </div>
+          )}
           {error && <p className="text-sm text-[#C8102E]">{error}</p>}
         </CardContent>
       </Card>
