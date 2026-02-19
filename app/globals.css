@@ -21,6 +21,51 @@
   --cny-burgundy: #7a0c1b;
   --cny-cream: #fdf6ec;
   --cny-text: #2b2b2b;
+  --header-bg: rgba(253, 246, 236, 0.95);
+  --header-border: #d4af37;
+  --nav-bg: #fdf6ec;
+  --nav-border: rgba(212, 175, 55, 0.5);
+  --nav-text: #2b2b2b;
+  --nav-hover: rgba(122, 12, 27, 0.1);
+  --nav-active-bg: rgba(122, 12, 27, 0.08);
+  --nav-active-text: #7a0c1b;
+  --toggle-bg: rgba(212, 175, 55, 0.15);
+  --toggle-text: #7a0c1b;
+  --toggle-active-bg: linear-gradient(140deg, #c8102e, #7a0c1b);
+  --toggle-active-text: #fdf6ec;
+  --footer-text: #7a0c1b;
+  --panel-bg: linear-gradient(170deg, rgba(253, 246, 236, 0.94), rgba(253, 246, 236, 0.82));
+  --panel-border: color-mix(in srgb, var(--cny-gold) 60%, #d5bf83);
+  --panel-shadow: 0 10px 28px rgba(122, 12, 27, 0.08);
+}
+
+html[data-theme="dark"] {
+  --background: 352 28% 12%;
+  --foreground: 39 80% 93%;
+  --card: 350 24% 18%;
+  --card-foreground: 39 80% 93%;
+  --secondary: 352 20% 20%;
+  --secondary-foreground: 39 80% 93%;
+  --muted: 352 20% 18%;
+  --muted-foreground: 34 25% 82%;
+  --border: 44 48% 40%;
+  --ring: 44 58% 52%;
+  --header-bg: rgba(31, 16, 20, 0.9);
+  --header-border: rgba(212, 175, 55, 0.55);
+  --nav-bg: rgba(55, 25, 31, 0.86);
+  --nav-border: rgba(212, 175, 55, 0.48);
+  --nav-text: #f6e9cf;
+  --nav-hover: rgba(212, 175, 55, 0.14);
+  --nav-active-bg: rgba(212, 175, 55, 0.18);
+  --nav-active-text: #fde8a2;
+  --toggle-bg: rgba(212, 175, 55, 0.12);
+  --toggle-text: #f6e4b2;
+  --toggle-active-bg: linear-gradient(140deg, #d4af37, #8c6b13);
+  --toggle-active-text: #231512;
+  --footer-text: #f4ddb1;
+  --panel-bg: linear-gradient(170deg, rgba(61, 27, 34, 0.94), rgba(45, 22, 28, 0.9));
+  --panel-border: rgba(212, 175, 55, 0.42);
+  --panel-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -41,6 +86,14 @@ body {
   animation: bodyBgDrift 24s ease-in-out infinite alternate;
 }
 
+html[data-theme="dark"] body {
+  background-image:
+    radial-gradient(circle at 12% 14%, rgba(87, 28, 40, 0.56) 0%, rgba(87, 28, 40, 0) 40%),
+    radial-gradient(circle at 88% 12%, rgba(148, 102, 29, 0.26) 0%, rgba(148, 102, 29, 0) 36%),
+    radial-gradient(circle at 70% 82%, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0) 42%),
+    linear-gradient(160deg, #1f1014 0%, #2a151b 44%, #150c10 100%);
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -52,6 +105,10 @@ body::before {
   background-repeat: repeat;
   opacity: 0.09;
   animation: patternDrift 18s linear infinite;
+}
+
+html[data-theme="dark"] body::before {
+  opacity: 0.12;
 }
 
 h1,
@@ -124,7 +181,7 @@ textarea {
   max-width: 1200px;
   padding: 0 1rem 1.25rem;
   font-size: 12px;
-  color: #7a0c1b;
+  color: var(--footer-text);
   opacity: 0.9;
 }
 
@@ -139,14 +196,18 @@ textarea {
 }
 
 .cny-panel {
-  border: 1px solid color-mix(in srgb, var(--cny-gold) 60%, #d5bf83);
-  background: linear-gradient(170deg, rgba(253, 246, 236, 0.94), rgba(253, 246, 236, 0.82));
-  box-shadow: 0 10px 28px rgba(122, 12, 27, 0.08);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
 }
 
 .cny-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.75), transparent);
+}
+
+html[data-theme="dark"] .cny-divider {
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.45), transparent);
 }
 
 .cny-hero {
@@ -191,6 +252,53 @@ textarea {
 .cny-parchment {
   border: 1px solid rgba(212, 175, 55, 0.6);
   background: linear-gradient(180deg, rgba(253, 246, 236, 0.98), rgba(246, 233, 211, 0.92));
+}
+
+html[data-theme="dark"] .cny-parchment {
+  border-color: rgba(212, 175, 55, 0.42);
+  background: linear-gradient(180deg, rgba(66, 30, 37, 0.96), rgba(45, 23, 29, 0.9));
+}
+
+.site-header {
+  border-bottom: 1px solid var(--header-border);
+  background: var(--header-bg);
+}
+
+.site-nav {
+  border: 1px solid var(--nav-border);
+  background: var(--nav-bg);
+}
+
+.site-nav-link {
+  color: var(--nav-text);
+}
+
+.site-nav-link:hover {
+  background: var(--nav-hover);
+}
+
+.site-nav-link-active {
+  border-bottom: 2px solid var(--cny-gold);
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+}
+
+.theme-toggle {
+  border: 1px solid var(--nav-border);
+  background: var(--toggle-bg);
+}
+
+.theme-toggle-btn {
+  border-radius: 9999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--toggle-text);
+}
+
+.theme-toggle-btn-active {
+  background: var(--toggle-active-bg);
+  color: var(--toggle-active-text);
 }
 
 .cny-shimmer {

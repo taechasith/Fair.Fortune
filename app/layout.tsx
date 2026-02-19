@@ -13,14 +13,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="morning">
       <body>
         <div className="page-shell">
           <SiteHeader />
           <main className="page-main">{children}</main>
           <footer className="page-footer">
-            Right all reserverd to Reseacher of FUTURISTIC CULTURE Interfaces at CreativeDev.Lab@HSUTCC
-            (CreativeLabTH Group).
+            All Right Reserved
+            <br />
+            to the Researcher of FUTURISTIC CULTURE Interfaces at CreativeDev.Lab@HSUTCC (CreativeLabTH Group).
           </footer>
         </div>
       </body>
