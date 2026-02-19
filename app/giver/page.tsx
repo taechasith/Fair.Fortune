@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchWithAuth, parseErrorText } from "@/lib/client/session";
 import { useAuthUser } from "@/lib/client/use-auth-user";
@@ -40,6 +41,7 @@ export default function GiverPage() {
   const [activeRoom, setActiveRoom] = useState<CollaborationRoom>();
   const [joinCode, setJoinCode] = useState("");
   const [messageText, setMessageText] = useState("");
+  const [messageVisibility, setMessageVisibility] = useState<"room" | "private">("private");
   const [slipDataUrl, setSlipDataUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -203,7 +205,11 @@ export default function GiverPage() {
       const response = await fetchWithAuth(`/api/rooms/${roomCode}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: messageText, imageDataUrl: slipDataUrl || undefined })
+        body: JSON.stringify({
+          text: messageText,
+          imageDataUrl: slipDataUrl || undefined,
+          visibility: messageVisibility
+        })
       });
       const payload = await response.json();
       if (!response.ok) {
@@ -316,9 +322,9 @@ export default function GiverPage() {
 
           {roomCode && <p className="text-sm text-[#7A0C1B]">Connected room code: {roomCode}</p>}
           {roomCode && (
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#D4AF37]/45 bg-[#fffaf1] p-3">
+            <div className="room-code-share flex flex-wrap items-center gap-2 rounded-xl border border-[#D4AF37]/45 bg-[#fffaf1] p-3">
               <span className="text-sm text-[#7A0C1B]">Share this room code:</span>
-              <code className="rounded-md bg-[#7A0C1B] px-2 py-1 text-sm font-bold tracking-[0.12em] text-[#FDF6EC]">
+              <code className="room-code-pill rounded-md bg-[#7A0C1B] px-2 py-1 text-sm font-bold tracking-[0.12em] text-[#FDF6EC]">
                 {roomCode}
               </code>
               <Button
@@ -395,6 +401,16 @@ export default function GiverPage() {
           <CardTitle>Giver message + transfer slip upload</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <div className="space-y-1">
+            <Label>Send as</Label>
+            <Select
+              value={messageVisibility}
+              onChange={(e) => setMessageVisibility(e.target.value as "room" | "private")}
+            >
+              <option value="private">Private to receiver</option>
+              <option value="room">Visible in room</option>
+            </Select>
+          </div>
           <Textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} placeholder="Message to receiver" />
           <Input
             type="file"
@@ -414,6 +430,9 @@ export default function GiverPage() {
             {activeRoom?.messages.map((message) => (
               <div key={message.id} className="rounded-xl border border-[#D4AF37]/35 p-3 text-sm">
                 <div className="font-semibold text-[#7A0C1B]">{message.senderRole}</div>
+                <div className="text-xs text-[#5f5148]">
+                  {message.visibility === "private" ? "Private message" : "Room message"}
+                </div>
                 <div className="text-[#2B2B2B]">{message.text}</div>
                 {message.imageDataUrl && (
                   // eslint-disable-next-line @next/next/no-img-element

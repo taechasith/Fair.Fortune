@@ -1,4 +1,5 @@
 export type SenderRole = "giver" | "receiver";
+export type MessageVisibility = "room" | "private";
 
 export interface AuthUser {
   id: string;
@@ -32,6 +33,8 @@ export interface RoomMessage {
   id: string;
   senderRole: SenderRole;
   senderUserId: string;
+  visibility: MessageVisibility;
+  privateToUserId?: string;
   text: string;
   imageDataUrl?: string;
   createdAt: string;

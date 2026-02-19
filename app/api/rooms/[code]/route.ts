@@ -18,5 +18,10 @@ export async function GET(request: NextRequest, context: { params: { code: strin
   }
 
   const role = room.giverUserId === user.id ? "giver" : "receiver";
-  return NextResponse.json({ room, role });
+  const visibleMessages = room.messages.filter((message) => {
+    const visibility = message.visibility ?? "room";
+    if (visibility === "room") return true;
+    return message.senderUserId === user.id || message.privateToUserId === user.id;
+  });
+  return NextResponse.json({ room: { ...room, messages: visibleMessages }, role });
 }

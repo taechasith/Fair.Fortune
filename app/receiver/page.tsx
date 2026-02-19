@@ -29,6 +29,7 @@ export default function ReceiverPage() {
   const [accountNumber, setAccountNumber] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
+  const [messageVisibility, setMessageVisibility] = useState<"room" | "private">("private");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [authExpired, setAuthExpired] = useState(false);
@@ -146,7 +147,7 @@ export default function ReceiverPage() {
       const response = await fetchWithAuth(`/api/rooms/${roomCode}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: message })
+        body: JSON.stringify({ text: message, visibility: messageVisibility })
       });
       const payload = await response.json();
       if (!response.ok) {
@@ -282,6 +283,16 @@ export default function ReceiverPage() {
           <CardTitle>Room Messages</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <div className="space-y-1">
+            <Label>Send as</Label>
+            <Select
+              value={messageVisibility}
+              onChange={(e) => setMessageVisibility(e.target.value as "room" | "private")}
+            >
+              <option value="private">Private to giver</option>
+              <option value="room">Visible in room</option>
+            </Select>
+          </div>
           <Textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Send message to giver" />
           <Button disabled={loading || !roomCode || !message.trim()} onClick={sendMessage}>
             Send message
@@ -290,6 +301,9 @@ export default function ReceiverPage() {
             {room?.messages.map((item) => (
               <div key={item.id} className="rounded-xl border border-[#D4AF37]/35 p-3 text-sm">
                 <div className="font-semibold text-[#7A0C1B]">{item.senderRole}</div>
+                <div className="text-xs text-[#5f5148]">
+                  {item.visibility === "private" ? "Private message" : "Room message"}
+                </div>
                 <div>{item.text}</div>
                 {item.imageDataUrl && (
                   // eslint-disable-next-line @next/next/no-img-element

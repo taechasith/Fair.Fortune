@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 export type SenderRole = "giver" | "receiver";
+export type MessageVisibility = "room" | "private";
 
 export interface AppUser {
   id: string;
@@ -29,6 +30,8 @@ export interface RoomMessage {
   id: string;
   senderRole: SenderRole;
   senderUserId: string;
+  visibility: MessageVisibility;
+  privateToUserId?: string;
   text: string;
   imageDataUrl?: string;
   createdAt: string;
@@ -285,13 +288,17 @@ export function addRoomMessage(
   senderRole: SenderRole,
   senderUserId: string,
   text: string,
-  imageDataUrl?: string
+  imageDataUrl?: string,
+  visibility: MessageVisibility = "room",
+  privateToUserId?: string
 ): Room {
   const store = getStore();
   room.messages.push({
     id: randomId("msg"),
     senderRole,
     senderUserId,
+    visibility,
+    privateToUserId,
     text: text.trim(),
     imageDataUrl,
     createdAt: new Date().toISOString()

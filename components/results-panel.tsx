@@ -49,9 +49,9 @@ export function ResultsPanel({ result, budget }: { result?: AllocationResult; bu
       </div>
       {result.warnings.messages.length > 0 && (
         <Alert className="border-warning text-warning">
-          {result.warnings.messages.map((w) => (
+          {Array.from(new Set(result.warnings.messages.map((w) => friendlyWarning(w)))).map((w) => (
             <div key={w} className="overflow-x-auto whitespace-nowrap">
-              {friendlyWarning(w)}
+              {w}
             </div>
           ))}
         </Alert>

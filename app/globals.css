@@ -423,6 +423,26 @@ html[data-theme="dark"] .border-\[\#D4AF37\]\/40 {
   color: #7a0c1b;
 }
 
+.room-code-share {
+  background: #fffaf1;
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+.room-code-pill {
+  background: #7a0c1b;
+  color: #fdf6ec;
+}
+
+html[data-theme="dark"] .room-code-share {
+  background: #fffaf1;
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+html[data-theme="dark"] .room-code-pill {
+  background: #7a0c1b;
+  color: #fdf6ec;
+}
+
 .consent-backdrop {
   animation: consentBackdropIn 280ms ease-out both;
 }
