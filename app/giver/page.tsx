@@ -1,15 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ImportJson } from "@/components/import-json";
 import { RecipientTable } from "@/components/recipient-table";
 import { ResultsPanel } from "@/components/results-panel";
 import { SettingsPanel, SpendingStyle } from "@/components/settings-panel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { fetchWithAuth, parseErrorText } from "@/lib/client/session";
+import { useAuthUser } from "@/lib/client/use-auth-user";
 import { computeAllocation } from "@/lib/math/engine";
 import { exportState } from "@/lib/state/storage";
 import { useScenarioState } from "@/lib/state/useScenarioState";
+import { CollaborationRoom, Project } from "@/lib/types/collab";
 
 export default function GiverPage() {
   const {
@@ -22,7 +29,20 @@ export default function GiverPage() {
     setAll,
     persisted
   } = useScenarioState();
+  const { user, loading: userLoading } = useAuthUser();
   const [spendingStyle, setSpendingStyle] = useState<SpendingStyle>("auto");
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [title, setTitle] = useState("");
+  const [situation, setSituation] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [roomCode, setRoomCode] = useState("");
+  const [activeRoom, setActiveRoom] = useState<CollaborationRoom>();
+  const [joinCode, setJoinCode] = useState("");
+  const [messageText, setMessageText] = useState("");
+  const [slipDataUrl, setSlipDataUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const canRun = useMemo(() => recipients.length > 0 && settings.budget >= 0, [recipients, settings.budget]);
 
@@ -42,20 +62,224 @@ export default function GiverPage() {
     }));
   }
 
+  const requestProjects = useCallback(async () => {
+    const response = await fetchWithAuth("/api/projects");
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(parseErrorText(payload));
+    }
+    const nextProjects = (payload.projects as Project[]) ?? [];
+    setProjects(nextProjects);
+    if (!selectedProjectId && nextProjects[0]?.id) {
+      setSelectedProjectId(nextProjects[0].id);
+    }
+  }, [selectedProjectId]);
+
+  async function requestRoom(nextCode: string) {
+    const response = await fetchWithAuth(`/api/rooms/${nextCode}`);
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(parseErrorText(payload));
+    }
+    setActiveRoom(payload.room as CollaborationRoom);
+  }
+
+  useEffect(() => {
+    if (!user) return;
+    requestProjects().catch(() => undefined);
+  }, [user, requestProjects]);
+
+  useEffect(() => {
+    if (!roomCode) return;
+    const timer = setInterval(() => {
+      requestRoom(roomCode).catch(() => undefined);
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [roomCode]);
+
+  async function createProject() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetchWithAuth("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, situation })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(parseErrorText(payload));
+      }
+      setTitle("");
+      setSituation("");
+      await requestProjects();
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : "Could not create project");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function createRoomForProject() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetchWithAuth("/api/rooms/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId: selectedProjectId })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(parseErrorText(payload));
+      }
+      const room = payload.room as CollaborationRoom;
+      setRoomCode(room.code);
+      setActiveRoom(room);
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : "Could not create room");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function joinExistingRoom() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetchWithAuth("/api/rooms/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomCode: joinCode })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(parseErrorText(payload));
+      }
+      const room = payload.room as CollaborationRoom;
+      setRoomCode(room.code);
+      setActiveRoom(room);
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : "Could not join room");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function sendMessage() {
+    if (!roomCode) return;
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetchWithAuth(`/api/rooms/${roomCode}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: messageText, imageDataUrl: slipDataUrl || undefined })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(parseErrorText(payload));
+      }
+      setActiveRoom(payload.room as CollaborationRoom);
+      setMessageText("");
+      setSlipDataUrl("");
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : "Could not send message");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (userLoading) {
+    return <div className="text-sm text-[#5f5148]">Loading session...</div>;
+  }
+
+  if (!user) {
+    return (
+      <Card className="cny-panel">
+        <CardHeader>
+          <CardTitle>Login required</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-sm text-[#5f5148]">Please login so your project and gratitude room data can be stored.</p>
+          <Link href="/login" className="text-sm font-semibold text-[#7A0C1B] underline">
+            Open Login Page
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-[#7A0C1B]">Giver Mode</h1>
+
       <Card className="cny-panel">
-        <CardContent className="pt-6">
-          <ol className="grid gap-2 text-sm text-[#5f5148] md:grid-cols-5">
-            <li>Step 1: Enter Budget</li>
-            <li>Step 2: Add People</li>
-            <li>Step 3: Choose Fairness Style</li>
-            <li>Step 4: Click Calculate</li>
-            <li>Step 5: See Results</li>
-          </ol>
+        <CardHeader>
+          <CardTitle>Create Project (family/work/custom)</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 md:grid-cols-2">
+          <div className="space-y-1">
+            <Label>Project title</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Family CNY 2026" />
+          </div>
+          <div className="space-y-1">
+            <Label>Situation</Label>
+            <Input value={situation} onChange={(e) => setSituation(e.target.value)} placeholder="family / work / custom" />
+          </div>
+          <div>
+            <Button disabled={loading || !title || !situation} onClick={createProject}>
+              Save project
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      <Card className="cny-panel">
+        <CardHeader>
+          <CardTitle>Room code connection</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="space-y-1 md:col-span-2">
+              <Label>Select project</Label>
+              <select
+                className="flex h-10 w-full rounded-xl border border-[#D4AF37]/50 bg-[#FDF6EC] px-3 py-2 text-sm text-[#2B2B2B]"
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+              >
+                <option value="">Select project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.title} - {project.situation}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-end">
+              <Button disabled={loading || !selectedProjectId} onClick={createRoomForProject}>
+                Create room
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="space-y-1 md:col-span-2">
+              <Label>Join by room code</Label>
+              <Input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="ABC123" />
+            </div>
+            <div className="flex items-end">
+              <Button variant="secondary" disabled={loading || !joinCode} onClick={joinExistingRoom}>
+                Join room
+              </Button>
+            </div>
+          </div>
+
+          {roomCode && <p className="text-sm text-[#7A0C1B]">Connected room code: {roomCode}</p>}
+          {error && <p className="text-sm text-[#C8102E]">{error}</p>}
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="cny-panel">
           <CardHeader>
@@ -79,8 +303,6 @@ export default function GiverPage() {
           </CardContent>
         </Card>
       </div>
-
-      <div className="cny-divider" />
 
       <div className="flex flex-wrap gap-2">
         <Button
@@ -109,6 +331,41 @@ export default function GiverPage() {
         </CardHeader>
         <CardContent className="cny-parchment rounded-xl p-4">
           <ResultsPanel result={lastResult} budget={settings.budget} />
+        </CardContent>
+      </Card>
+
+      <Card className="cny-panel">
+        <CardHeader>
+          <CardTitle>Giver message + transfer slip upload</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} placeholder="Message to receiver" />
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = () => setSlipDataUrl(String(reader.result ?? ""));
+              reader.readAsDataURL(file);
+            }}
+          />
+          <Button disabled={loading || !roomCode || (!messageText && !slipDataUrl)} onClick={sendMessage}>
+            Send to room
+          </Button>
+          <div className="space-y-2">
+            {activeRoom?.messages.map((message) => (
+              <div key={message.id} className="rounded-xl border border-[#D4AF37]/35 p-3 text-sm">
+                <div className="font-semibold text-[#7A0C1B]">{message.senderRole}</div>
+                <div className="text-[#2B2B2B]">{message.text}</div>
+                {message.imageDataUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={message.imageDataUrl} alt="Transfer slip" className="mt-2 max-h-40 rounded-lg border" />
+                )}
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

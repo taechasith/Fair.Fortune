@@ -4,14 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 const modes = [
   {
+    href: "/login",
+    icon: "LOGIN",
+    title: "Login",
+    description: "Sign in or register to store project, room, and gratitude data."
+  },
+  {
     href: "/giver",
-    icon: "🎁",
+    icon: "GIVER",
     title: "Giver Mode",
     description: "Set budget, recipients, fairness and lucky rules, then generate allocations."
   },
   {
     href: "/receiver",
-    icon: "🧧",
+    icon: "RECV",
     title: "Receiver Mode",
     description: "Pick one person and see why their hongbao amount was assigned."
   }
@@ -29,9 +35,7 @@ export default function HomePage() {
             <p className="inline-flex rounded-full border border-[#D4AF37]/70 bg-[#D4AF37]/10 px-3 py-1 text-xs font-semibold text-[#F5DE88]">
               Budget-Constrained Hongbao System
             </p>
-            <h1 className="text-3xl font-bold leading-tight md:text-5xl">
-              FairFortune for Chinese New Year
-            </h1>
+            <h1 className="text-3xl font-bold leading-tight md:text-5xl">FairFortune for Chinese New Year</h1>
             <p className="max-w-xl text-sm text-[#F8EFD8] md:text-base">
               A modern, transparent, and academically grounded way to allocate hongbao fairly for family gatherings
               and classroom demos.
@@ -53,7 +57,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-4 md:grid-cols-3">
         {modes.map((mode) => (
           <Link key={mode.href} href={mode.href}>
             <Card className="cny-panel cny-card-hover h-full rounded-2xl transition">
@@ -77,9 +81,7 @@ export default function HomePage() {
 
       <section className="cny-panel rounded-2xl p-4 md:p-6">
         <details>
-          <summary className="cursor-pointer text-sm font-semibold text-[#7A0C1B]">
-            Study / Classroom Mode
-          </summary>
+          <summary className="cursor-pointer text-sm font-semibold text-[#7A0C1B]">Study / Classroom Mode</summary>
           <p className="mt-2 text-sm text-[#5f5148]">
             This section is for educational purposes and shows the behind-the-scenes calculation process.
           </p>

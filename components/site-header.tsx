@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/giver", label: "Giver Mode" },
-  { href: "/receiver", label: "Receiver Mode" }
+  { href: "/receiver", label: "Receiver Mode" },
+  { href: "/login", label: "Login" }
 ];
 
 type ThemeMode = "morning" | "dark";
