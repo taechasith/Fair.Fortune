@@ -2,12 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/server/auth";
 import { createProject, listProjects } from "@/lib/server/collabStore";
 
+function toProjectSummary(project: ReturnType<typeof listProjects>[number]) {
+  return {
+    id: project.id,
+    userId: project.userId,
+    title: project.title,
+    situation: project.situation,
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+    hasSavedScenario: Boolean(project.scenario)
+  };
+}
+
 export async function GET(request: NextRequest) {
   const user = getAuthenticatedUser(request);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  return NextResponse.json({ projects: listProjects(user.id) });
+  return NextResponse.json({ projects: listProjects(user.id).map(toProjectSummary) });
 }
 
 export async function POST(request: NextRequest) {
@@ -25,5 +37,5 @@ export async function POST(request: NextRequest) {
   }
 
   const project = createProject(user.id, title, situation);
-  return NextResponse.json({ project }, { status: 201 });
+  return NextResponse.json({ project: toProjectSummary(project) }, { status: 201 });
 }

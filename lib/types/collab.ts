@@ -13,6 +13,8 @@ export interface Project {
   title: string;
   situation: string;
   createdAt: string;
+  updatedAt?: string;
+  hasSavedScenario?: boolean;
 }
 
 export interface RoomBankDetails {

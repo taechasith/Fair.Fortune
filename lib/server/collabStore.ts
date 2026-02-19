@@ -2,6 +2,7 @@ import "server-only";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import type { PersistedState } from "@/lib/types";
 
 export type SenderRole = "giver" | "receiver";
 export type MessageVisibility = "room" | "private";
@@ -24,6 +25,8 @@ export interface Project {
   title: string;
   situation: string;
   createdAt: string;
+  updatedAt: string;
+  scenario?: PersistedState;
 }
 
 export interface RoomMessage {
@@ -120,10 +123,17 @@ function loadStoreFromDisk(): Store {
     }
     const raw = fs.readFileSync(STORE_FILE, "utf8");
     const parsed = JSON.parse(raw) as Partial<Store>;
+    const projects = Array.isArray(parsed.projects)
+      ? parsed.projects.map((candidate) => ({
+          ...candidate,
+          updatedAt: candidate.updatedAt ?? candidate.createdAt ?? new Date().toISOString()
+        }))
+      : [];
+
     return {
       users: Array.isArray(parsed.users) ? parsed.users : [],
       sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
-      projects: Array.isArray(parsed.projects) ? parsed.projects : [],
+      projects,
       rooms: Array.isArray(parsed.rooms) ? parsed.rooms : []
     };
   } catch {
@@ -188,12 +198,14 @@ export function removeSession(token?: string | null): void {
 
 export function createProject(userId: string, title: string, situation: string): Project {
   const store = getStore();
+  const now = new Date().toISOString();
   const project: Project = {
     id: randomId("prj"),
     userId,
     title: title.trim(),
     situation: situation.trim(),
-    createdAt: new Date().toISOString()
+    createdAt: now,
+    updatedAt: now
   };
   store.projects.unshift(project);
   saveStore(store);
@@ -203,6 +215,24 @@ export function createProject(userId: string, title: string, situation: string):
 export function listProjects(userId: string): Project[] {
   const store = getStore();
   return store.projects.filter((project) => project.userId === userId);
+}
+
+export function getProjectForUser(projectId: string, userId: string): Project | undefined {
+  const store = getStore();
+  return store.projects.find((project) => project.id === projectId && project.userId === userId);
+}
+
+export function saveProjectScenario(projectId: string, userId: string, scenario: PersistedState): Project {
+  const store = getStore();
+  const project = store.projects.find((candidate) => candidate.id === projectId && candidate.userId === userId);
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  project.scenario = scenario;
+  project.updatedAt = new Date().toISOString();
+  saveStore(store);
+  return project;
 }
 
 export function createRoom(projectId: string, giverUserId: string): Room {

@@ -10,6 +10,12 @@ const modes = [
     description: "Sign in or register to store project, room, and gratitude data."
   },
   {
+    href: "/projects",
+    icon: "SAVE",
+    title: "Projects",
+    description: "Save current scenario to project and reopen saved projects later."
+  },
+  {
     href: "/giver",
     icon: "GIVER",
     title: "Giver Mode",
