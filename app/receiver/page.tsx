@@ -24,7 +24,6 @@ export default function ReceiverPage() {
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [room, setRoom] = useState<CollaborationRoom>();
-  const [roomRole, setRoomRole] = useState<"giver" | "receiver" | "">("");
   const [bankName, setBankName] = useState("");
   const [accountName, setAccountName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -47,9 +46,7 @@ export default function ReceiverPage() {
       throw new Error(parseErrorText(payload));
     }
     const nextRoom = payload.room as CollaborationRoom;
-    const nextRole = payload.role as "giver" | "receiver" | undefined;
     setRoom(nextRoom);
-    setRoomRole(nextRole ?? "");
     if (nextRoom.bankDetails) {
       setBankName(nextRoom.bankDetails.bankName);
       setAccountName(nextRoom.bankDetails.accountName);
@@ -106,10 +103,8 @@ export default function ReceiverPage() {
         throw new Error(parseErrorText(payload));
       }
       const joined = payload.room as CollaborationRoom;
-      const role = payload.role as "giver" | "receiver" | undefined;
       setRoomCode(joined.code);
       setRoom(joined);
-      setRoomRole(role ?? "");
       await refreshRoom(joined.code);
     } catch (apiError) {
       setError(apiError instanceof Error ? apiError.message : "Could not join room");
@@ -120,10 +115,6 @@ export default function ReceiverPage() {
 
   async function saveBankDetails() {
     if (!roomCode) return;
-    if (roomRole !== "receiver") {
-      setError("Bank details can be saved only from the receiver account in this room.");
-      return;
-    }
     setLoading(true);
     setError("");
     try {
@@ -280,15 +271,10 @@ export default function ReceiverPage() {
           <Input value={accountName} onChange={(e) => setAccountName(e.target.value)} placeholder="Account name" />
           <Input value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} placeholder="Account number" />
           <div>
-            <Button disabled={loading || !roomCode || roomRole !== "receiver"} onClick={saveBankDetails}>
+            <Button disabled={loading || !roomCode} onClick={saveBankDetails}>
               Save bank details
             </Button>
             <p className="mt-2 text-xs text-[#5f5148]">These details are sent privately to the giver.</p>
-            {roomCode && roomRole !== "receiver" && (
-              <p className="mt-1 text-xs text-[#C8102E]">
-                You joined this room as giver. Use the receiver account to send bank details privately.
-              </p>
-            )}
           </div>
         </CardContent>
       </Card>

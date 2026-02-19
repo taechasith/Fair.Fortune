@@ -292,8 +292,8 @@ export function saveRoomBankDetails(
   details: { bankName: string; accountName: string; accountNumber: string }
 ): Room {
   const store = getStore();
-  if (room.receiverUserId !== userId) {
-    throw new Error("Only receiver can update bank details");
+  if (room.receiverUserId !== userId && room.giverUserId !== userId) {
+    throw new Error("Only room participants can update bank details");
   }
   room.bankDetails = details;
   saveStore(store);
