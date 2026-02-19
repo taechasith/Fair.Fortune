@@ -1,6 +1,6 @@
 <img width="841" height="239" alt="image" src="https://github.com/user-attachments/assets/bd9f3a7a-eade-4311-bb48-8444ffc4c61e" />
 
-# FairFortune (Current Version)
+# FairFortune (02/19/2026 Version)
 
 FairFortune is a Next.js web app for culturally aware hongbao planning with giver/receiver collaboration.
 
