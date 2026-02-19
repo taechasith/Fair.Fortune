@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AuthUser } from "@/lib/types/collab";
 import { fetchWithAuth, parseErrorText } from "./session";
 
@@ -14,7 +14,7 @@ export function useAuthUser(): {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadUser() {
+  const loadUser = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -22,7 +22,7 @@ export function useAuthUser(): {
       const payload = await response.json();
       if (!response.ok) {
         setUser(undefined);
-        setError(parseErrorText(payload));
+        setError(response.status === 401 ? "" : parseErrorText(payload));
         return;
       }
       setUser(payload.user);
@@ -32,11 +32,11 @@ export function useAuthUser(): {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [loadUser]);
 
   return { user, loading, error, refresh: loadUser };
 }

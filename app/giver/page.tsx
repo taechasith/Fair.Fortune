@@ -43,6 +43,7 @@ export default function GiverPage() {
   const [slipDataUrl, setSlipDataUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [authExpired, setAuthExpired] = useState(false);
 
   const canRun = useMemo(() => recipients.length > 0 && settings.budget >= 0, [recipients, settings.budget]);
 
@@ -70,8 +71,9 @@ export default function GiverPage() {
     }
     const nextProjects = (payload.projects as Project[]) ?? [];
     setProjects(nextProjects);
-    if (!selectedProjectId && nextProjects[0]?.id) {
-      setSelectedProjectId(nextProjects[0].id);
+    const stillExists = nextProjects.some((project) => project.id === selectedProjectId);
+    if (!stillExists) {
+      setSelectedProjectId(nextProjects[0]?.id ?? "");
     }
   }, [selectedProjectId]);
 
@@ -79,6 +81,9 @@ export default function GiverPage() {
     const response = await fetchWithAuth(`/api/rooms/${nextCode}`);
     const payload = await response.json();
     if (!response.ok) {
+      if (response.status === 401) {
+        setAuthExpired(true);
+      }
       throw new Error(parseErrorText(payload));
     }
     setActiveRoom(payload.room as CollaborationRoom);
@@ -108,6 +113,9 @@ export default function GiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       setTitle("");
@@ -131,6 +139,9 @@ export default function GiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       const room = payload.room as CollaborationRoom;
@@ -154,6 +165,9 @@ export default function GiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       const room = payload.room as CollaborationRoom;
@@ -178,6 +192,9 @@ export default function GiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       setActiveRoom(payload.room as CollaborationRoom);
@@ -213,6 +230,13 @@ export default function GiverPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-[#7A0C1B]">Giver Mode</h1>
+      {authExpired && (
+        <Card className="cny-panel border-[#C8102E]/50">
+          <CardContent className="pt-5 text-sm text-[#7A0C1B]">
+            Session expired. Please <Link href="/login" className="underline">login again</Link>.
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="cny-panel">
         <CardHeader>

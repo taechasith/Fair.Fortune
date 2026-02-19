@@ -18,6 +18,10 @@ export function setSessionToken(token: string): void {
   window.localStorage.setItem(SESSION_KEY, token);
 }
 
+export function clearSessionToken(): void {
+  setSessionToken("");
+}
+
 export function authHeaders(): Record<string, string> {
   const token = getSessionToken();
   return token ? { "x-session-token": token } : {};
@@ -28,7 +32,11 @@ export async function fetchWithAuth(url: string, init?: RequestInit): Promise<Re
     ...(init?.headers ?? {}),
     ...authHeaders()
   };
-  return fetch(url, { ...init, headers });
+  const response = await fetch(url, { ...init, headers, credentials: "include" });
+  if (response.status === 401) {
+    clearSessionToken();
+  }
+  return response;
 }
 
 export function parseErrorText(payload: unknown): string {

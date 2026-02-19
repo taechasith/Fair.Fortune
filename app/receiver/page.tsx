@@ -31,6 +31,7 @@ export default function ReceiverPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authExpired, setAuthExpired] = useState(false);
 
   const selected = result.allocations.find((x) => x.recipientId === recipientId) ?? result.allocations[0];
 
@@ -38,6 +39,9 @@ export default function ReceiverPage() {
     const response = await fetchWithAuth(`/api/rooms/${code}`);
     const payload = await response.json();
     if (!response.ok) {
+      if (response.status === 401) {
+        setAuthExpired(true);
+      }
       throw new Error(parseErrorText(payload));
     }
     const nextRoom = payload.room as CollaborationRoom;
@@ -68,6 +72,9 @@ export default function ReceiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       const joined = payload.room as CollaborationRoom;
@@ -92,6 +99,9 @@ export default function ReceiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       setRoom(payload.room as CollaborationRoom);
@@ -114,6 +124,9 @@ export default function ReceiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       setRoom(payload.room as CollaborationRoom);
@@ -137,6 +150,9 @@ export default function ReceiverPage() {
       });
       const payload = await response.json();
       if (!response.ok) {
+        if (response.status === 401) {
+          setAuthExpired(true);
+        }
         throw new Error(parseErrorText(payload));
       }
       setRoom(payload.room as CollaborationRoom);
@@ -171,6 +187,13 @@ export default function ReceiverPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-[#7A0C1B]">Receiver Mode</h1>
+      {authExpired && (
+        <Card className="cny-panel border-[#C8102E]/50">
+          <CardContent className="pt-5 text-sm text-[#7A0C1B]">
+            Session expired. Please <Link href="/login" className="underline">login again</Link>.
+          </CardContent>
+        </Card>
+      )}
       <Card className="cny-panel">
         <CardHeader>
           <CardTitle>Join with Room Code</CardTitle>

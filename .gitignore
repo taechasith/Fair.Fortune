@@ -4,3 +4,4 @@ out
 coverage
 *.log
 .env*
+data/collab-store.json

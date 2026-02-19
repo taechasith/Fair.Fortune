@@ -1,4 +1,6 @@
 import "server-only";
+import fs from "node:fs";
+import path from "node:path";
 
 export type SenderRole = "giver" | "receiver";
 
@@ -64,6 +66,7 @@ interface Store {
 const globalStore = globalThis as typeof globalThis & {
   __fairfortuneCollabStore?: Store;
 };
+const STORE_FILE = path.join(process.cwd(), "data", "collab-store.json");
 
 function randomId(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-4)}`;
@@ -80,14 +83,41 @@ function randomRoomCode(): string {
 
 export function getStore(): Store {
   if (!globalStore.__fairfortuneCollabStore) {
-    globalStore.__fairfortuneCollabStore = {
-      users: [],
-      sessions: [],
-      projects: [],
-      rooms: []
-    };
+    globalStore.__fairfortuneCollabStore = loadStoreFromDisk();
   }
   return globalStore.__fairfortuneCollabStore;
+}
+
+function emptyStore(): Store {
+  return {
+    users: [],
+    sessions: [],
+    projects: [],
+    rooms: []
+  };
+}
+
+function loadStoreFromDisk(): Store {
+  try {
+    if (!fs.existsSync(STORE_FILE)) {
+      return emptyStore();
+    }
+    const raw = fs.readFileSync(STORE_FILE, "utf8");
+    const parsed = JSON.parse(raw) as Partial<Store>;
+    return {
+      users: Array.isArray(parsed.users) ? parsed.users : [],
+      sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
+      projects: Array.isArray(parsed.projects) ? parsed.projects : [],
+      rooms: Array.isArray(parsed.rooms) ? parsed.rooms : []
+    };
+  } catch {
+    return emptyStore();
+  }
+}
+
+function saveStore(store: Store): void {
+  fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
+  fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2), "utf8");
 }
 
 export function createUser(name: string, email: string, password: string): AppUser {
@@ -99,6 +129,7 @@ export function createUser(name: string, email: string, password: string): AppUs
   }
   const user: AppUser = { id: randomId("usr"), name: name.trim(), email: normalized, password };
   store.users.push(user);
+  saveStore(store);
   return user;
 }
 
@@ -116,6 +147,7 @@ export function createSession(userId: string): Session {
   const store = getStore();
   const session: Session = { token: randomId("sess"), userId };
   store.sessions.push(session);
+  saveStore(store);
   return session;
 }
 
@@ -131,6 +163,7 @@ export function removeSession(token?: string | null): void {
   if (!token) return;
   const store = getStore();
   store.sessions = store.sessions.filter((session) => session.token !== token);
+  saveStore(store);
 }
 
 export function createProject(userId: string, title: string, situation: string): Project {
@@ -143,6 +176,7 @@ export function createProject(userId: string, title: string, situation: string):
     createdAt: new Date().toISOString()
   };
   store.projects.unshift(project);
+  saveStore(store);
   return project;
 }
 
@@ -172,6 +206,7 @@ export function createRoom(projectId: string, giverUserId: string): Room {
     createdAt: new Date().toISOString()
   };
   store.rooms.unshift(room);
+  saveStore(store);
   return room;
 }
 
@@ -183,6 +218,7 @@ export function joinRoom(roomCode: string, userId: string): Room {
   }
   if (!room.receiverUserId) {
     room.receiverUserId = userId;
+    saveStore(store);
   }
   return room;
 }
@@ -201,14 +237,17 @@ export function saveRoomBankDetails(
   userId: string,
   details: { bankName: string; accountName: string; accountNumber: string }
 ): Room {
+  const store = getStore();
   if (room.receiverUserId !== userId) {
     throw new Error("Only receiver can update bank details");
   }
   room.bankDetails = details;
+  saveStore(store);
   return room;
 }
 
 export function addGratitudeNote(room: Room, authorRole: SenderRole, authorUserId: string, text: string): Room {
+  const store = getStore();
   room.gratitudeNotes.unshift({
     id: randomId("note"),
     authorRole,
@@ -216,6 +255,7 @@ export function addGratitudeNote(room: Room, authorRole: SenderRole, authorUserI
     text: text.trim(),
     createdAt: new Date().toISOString()
   });
+  saveStore(store);
   return room;
 }
 
@@ -226,6 +266,7 @@ export function addRoomMessage(
   text: string,
   imageDataUrl?: string
 ): Room {
+  const store = getStore();
   room.messages.push({
     id: randomId("msg"),
     senderRole,
@@ -234,6 +275,7 @@ export function addRoomMessage(
     imageDataUrl,
     createdAt: new Date().toISOString()
   });
+  saveStore(store);
   return room;
 }
 
