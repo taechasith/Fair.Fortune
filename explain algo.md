@@ -18,19 +18,14 @@
   Floating-point effects are explicitly noted to remind that values are double-precision approximations.
 
 ## Topic-to-page mapping
-
 - **Numerical accuracy & stability**
   Mainly visible on the **Lab** page (residuals, convergence, sensitivity), and also on **Giver/Receiver** pages through stability/exactness warnings.
-
 - **Linear algebra (SLE)**
   Presented on the **Lab** page via `Ax = b`, residual `r = Ax - b`, and norm readouts.
-
 - **Linear system solvers**
   Presented on the **Lab** page through side-by-side direct vs iterative solver behavior and convergence tracking.
-
 - **Interpolation for age modeling**
   Used in **Giver Mode settings and calculation flow**, and affects final results seen by both **Giver** and **Receiver** pages.
   Lagrange is conceptual background; the live system uses piecewise linear and natural cubic spline.
-
 - **Root finding for budget correction**
   Used in the **Giver/Receiver result flow** after lucky rounding to pull totals back toward the budget with practical stopping/safeguards.

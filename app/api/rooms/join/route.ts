@@ -16,7 +16,17 @@ export async function POST(request: NextRequest) {
 
   try {
     const room = joinRoom(roomCode, user.id);
-    return NextResponse.json({ room });
+    const role = room.giverUserId === user.id ? "giver" : "receiver";
+    const visibleMessages = room.messages.filter((message) => {
+      const visibility = message.visibility ?? "room";
+      if (visibility === "room") return true;
+      return message.senderUserId === user.id || message.privateToUserId === user.id;
+    });
+    const visibleBankDetails = role === "giver" ? room.bankDetails : undefined;
+    return NextResponse.json({
+      room: { ...room, bankDetails: visibleBankDetails, messages: visibleMessages },
+      role
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not join room";
     return NextResponse.json(
