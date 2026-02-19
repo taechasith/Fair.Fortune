@@ -417,6 +417,31 @@ html[data-theme="dark"] .border-\[\#D4AF37\]\/40 {
   color: #7a0c1b;
 }
 
+.consent-backdrop {
+  animation: consentBackdropIn 280ms ease-out both;
+}
+
+.consent-panel {
+  transform-origin: 50% 55%;
+  animation: consentPanelIn 360ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.consent-item {
+  opacity: 0;
+  animation: consentItemIn 320ms ease-out both;
+}
+
+.consent-checkbox {
+  accent-color: #7a0c1b;
+  transform: translateY(0);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.consent-checkbox:checked {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.22);
+}
+
 @keyframes pageFade {
   from {
     opacity: 0;
@@ -486,6 +511,46 @@ html[data-theme="dark"] .border-\[\#D4AF37\]\/40 {
   }
 }
 
+@keyframes consentBackdropIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes consentPanelIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.005);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes consentItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body {
     animation: none;
@@ -512,5 +577,11 @@ html[data-theme="dark"] .border-\[\#D4AF37\]\/40 {
 
   .cny-shimmer::after {
     display: none;
+  }
+
+  .consent-backdrop,
+  .consent-panel,
+  .consent-item {
+    animation: none;
   }
 }

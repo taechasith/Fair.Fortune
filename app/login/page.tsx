@@ -128,13 +128,16 @@ export default function LoginPage() {
       </Card>
 
       {showConsent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B2B2B]/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-2xl border border-[#D4AF37]/50 bg-[#FDF6EC] p-5 shadow-[0_24px_50px_rgba(43,43,43,0.35)] md:p-6">
-            <h2 className="text-xl font-bold text-[#7A0C1B]">Data Privacy Consent</h2>
-            <p className="mt-2 text-sm text-[#5f5148]">
+        <div className="consent-backdrop fixed inset-0 z-50 flex items-center justify-center bg-[#2B2B2B]/60 p-4 backdrop-blur-sm">
+          <div className="consent-panel w-full max-w-2xl rounded-2xl border border-[#D4AF37]/50 bg-[#FDF6EC] p-5 shadow-[0_24px_50px_rgba(43,43,43,0.35)] md:p-6">
+            <h2 className="consent-item text-xl font-bold text-[#7A0C1B]">Data Privacy Consent</h2>
+            <p className="consent-item mt-2 text-sm text-[#5f5148]" style={{ animationDelay: "40ms" }}>
               To use login and room-based collaboration, we collect and process account and message data.
             </p>
-            <div className="mt-4 space-y-3 rounded-xl border border-[#D4AF37]/35 bg-[#fffaf1] p-4 text-sm text-[#2B2B2B]">
+            <div
+              className="consent-item mt-4 space-y-3 rounded-xl border border-[#D4AF37]/35 bg-[#fffaf1] p-4 text-sm text-[#2B2B2B]"
+              style={{ animationDelay: "80ms" }}
+            >
               <p>
                 <span className="font-semibold text-[#7A0C1B]">Data we store:</span> name, email, project details,
                 room code activity, gratitude notes, chat messages, bank details, and uploaded transfer slip image.
@@ -148,16 +151,19 @@ export default function LoginPage() {
                 required; you can stop using collaboration features at any time.
               </p>
             </div>
-            <label className="mt-4 flex items-start gap-2 text-sm text-[#2B2B2B]">
+            <label
+              className="consent-item mt-4 flex items-start gap-2 text-sm text-[#2B2B2B]"
+              style={{ animationDelay: "120ms" }}
+            >
               <input
                 type="checkbox"
-                className="mt-1"
+                className="consent-checkbox mt-1"
                 checked={consentChecked}
                 onChange={(e) => setConsentChecked(e.target.checked)}
               />
               <span>I have read and agree to the data privacy terms for this application.</span>
             </label>
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="consent-item mt-5 flex flex-wrap gap-2" style={{ animationDelay: "160ms" }}>
               <Button disabled={!consentChecked} onClick={acceptConsent}>
                 Accept and Continue
               </Button>

@@ -1,5 +1,6 @@
 import "server-only";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 export type SenderRole = "giver" | "receiver";
@@ -66,7 +67,19 @@ interface Store {
 const globalStore = globalThis as typeof globalThis & {
   __fairfortuneCollabStore?: Store;
 };
-const STORE_FILE = path.join(process.cwd(), "data", "collab-store.json");
+function resolveStoreFile(): string {
+  if (process.env.FAIRFORTUNE_DATA_FILE) {
+    return process.env.FAIRFORTUNE_DATA_FILE;
+  }
+  const runningInServerless = Boolean(
+    process.env.VERCEL || process.env.AWS_REGION || process.env.LAMBDA_TASK_ROOT
+  );
+  if (runningInServerless) {
+    return path.join(os.tmpdir(), "fairfortune", "collab-store.json");
+  }
+  return path.join(process.cwd(), "data", "collab-store.json");
+}
+const STORE_FILE = resolveStoreFile();
 
 function randomId(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-4)}`;
@@ -116,8 +129,12 @@ function loadStoreFromDisk(): Store {
 }
 
 function saveStore(store: Store): void {
-  fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
-  fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2), "utf8");
+  try {
+    fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
+    fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2), "utf8");
+  } catch {
+    // Keep app functional even if filesystem is read-only in current runtime.
+  }
 }
 
 export function createUser(name: string, email: string, password: string): AppUser {
