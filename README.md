@@ -4,7 +4,6 @@
 
 **Author:** Taechasith Kangkhuntod  
 Human–Computer Interaction & Computational Design  
-Bangkok, Thailand — February 2026  
 
 **Live System:** https://fair-fortune.vercel.app/
 
