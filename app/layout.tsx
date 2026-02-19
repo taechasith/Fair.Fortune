@@ -18,6 +18,10 @@ export default function RootLayout({
         <div className="page-shell">
           <SiteHeader />
           <main className="page-main">{children}</main>
+          <footer className="page-footer">
+            Right all reserverd to Reseacher of FUTURISTIC CULTURE Interfaces at CreativeDev.Lab@HSUTCC
+            (CreativeLabTH Group).
+          </footer>
         </div>
       </body>
     </html>

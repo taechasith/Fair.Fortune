@@ -29,6 +29,8 @@
 
 body {
   @apply bg-background text-foreground antialiased;
+  position: relative;
+  isolation: isolate;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
   background-image:
     radial-gradient(circle at 12% 14%, rgba(255, 242, 220, 0.9) 0%, rgba(255, 242, 220, 0) 38%),
@@ -37,6 +39,19 @@ body {
     linear-gradient(160deg, #fff2dc 0%, #fdf6ec 44%, #f5e9d6 100%);
   background-size: 120% 120%, 130% 130%, 120% 120%, 100% 100%;
   animation: bodyBgDrift 24s ease-in-out infinite alternate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -30%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("/assets/bg-cny-pattern.png");
+  background-size: 360px;
+  background-repeat: repeat;
+  opacity: 0.09;
+  animation: patternDrift 18s linear infinite;
 }
 
 h1,
@@ -101,6 +116,22 @@ textarea {
 .page-main {
   @apply mx-auto max-w-[1200px] p-4 md:p-8;
   animation: pageFade 420ms ease both;
+}
+
+.page-footer {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 1rem 1.25rem;
+  font-size: 12px;
+  color: #7a0c1b;
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .page-footer {
+    padding: 0 2rem 1.75rem;
+  }
 }
 
 .cny-surface {
@@ -286,6 +317,15 @@ textarea {
   }
 }
 
+@keyframes patternDrift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 360px 240px;
+  }
+}
+
 @keyframes lanternFloat {
   0%,
   100% {
@@ -310,6 +350,10 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
   body {
+    animation: none;
+  }
+
+  body::before {
     animation: none;
   }
 
